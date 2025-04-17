@@ -122,11 +122,13 @@ function PharmaciesPage() {
 
   const getPharmacies = async () => {
     try {
+      setLoading(true);
       const response = await medicalResourcesController.getPharmacies({
         queryParams: `limit=${limitTable}`,
       });
 
       setPharmacies(response.data);
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -255,6 +257,8 @@ function PharmaciesPage() {
         await medicalResourcesController.getPharmaciesForExport();
 
       setPharmaciesExport(data);
+
+      console.log(pharmaciesExport);
 
       const worksheet = XLSX.utils.json_to_sheet(data);
       const workbook = XLSX.utils.book_new();
@@ -561,15 +565,7 @@ function PharmaciesPage() {
                         >
                           Détails
                         </button>
-                        {/* 
-                        <button
-                          className="btn btn-xs bg-amber-200 btn-soft"
-                          onClick={() => {
-                            openDetailsModal(pharmacy);
-                          }}
-                        >
-                          Modifier
-                        </button> */}
+
                         <button
                           className="btn btn-xs bg-red-400 text-white"
                           onClick={() => {

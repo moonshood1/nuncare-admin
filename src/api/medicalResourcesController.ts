@@ -5,7 +5,6 @@ import {
   MedecinePayload,
   Pharmacy,
   PharmacyExport,
-  PharmacyPayload,
   Section,
 } from "../interfaces/MedicalResources";
 
