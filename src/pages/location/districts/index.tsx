@@ -1,6 +1,6 @@
-import { CirclePlus, GlobeIcon, Map, SearchIcon } from "lucide-react";
+import { CirclePlus, GlobeIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { District, Region } from "../../../interfaces/Location";
+import { District } from "../../../interfaces/Location";
 import {
   ModalAdd,
   ModalConfirmation,
@@ -10,7 +10,6 @@ import { locationController } from "../../../api/locationController";
 import { toast } from "react-toastify";
 
 function DistrictsPage() {
-  const [researchReset, setResearchReset] = useState(false);
   const [opsLoading, setOpsLoading] = useState(false);
   const [district, setDistrict] = useState<District>();
   const [newDistrict, setNewDistrict] = useState("");
@@ -124,7 +123,7 @@ function DistrictsPage() {
 
   useEffect(() => {
     getDistricts();
-  }, [researchReset, changes]);
+  }, [changes]);
 
   return (
     <article>

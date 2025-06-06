@@ -29,7 +29,6 @@ function UsersPage() {
   const [districts, setDistricts] = useState<District[]>([]);
   const [cities, setCities] = useState<City[]>([]);
   const [regions, setRegions] = useState<Region[]>([]);
-  const [limitTable, setLimitTable] = useState(10);
   const [page, setPage] = useState(1);
   const [filterTableEnabled, setFilterTableEnabled] = useState(true);
   const [searchData, setSearchData] = useState<
@@ -50,10 +49,6 @@ function UsersPage() {
     setUser(e);
     requestModalRef.current?.open();
   };
-
-  // const changeDoctorsTableLimit = (newLimit: number) => {
-  //   setLimitTable(newLimit);
-  // };
 
   const changeDoctorsTablePage = (newPage: number) => {
     if (newPage !== page) {
@@ -109,7 +104,7 @@ function UsersPage() {
   const getDoctors = async () => {
     try {
       const response = await usersController.getDoctorsPaginated({
-        limit: limitTable,
+        limit: 10,
         page: page,
       });
 
@@ -177,7 +172,7 @@ function UsersPage() {
 
   useEffect(() => {
     getDoctors();
-  }, [page, limitTable, researchReset]);
+  }, [page, researchReset]);
 
   useEffect(() => {
     getKycStatsAndUsersCount();
