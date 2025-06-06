@@ -14,6 +14,17 @@ interface DoctorsResponse {
   data: User[];
 }
 
+interface DoctorsPaginatedResponse {
+  success: boolean;
+  data: User[];
+  meta: {
+    page: number;
+    limit: number;
+    totalPages: number;
+    totalItems: number;
+  };
+}
+
 interface KycResponse {
   success: boolean;
   data: Verification[];
@@ -69,6 +80,35 @@ class UsersController {
       const { data, success } = response.data;
 
       return { success, data };
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ message: string }>;
+        throw new Error(axiosError.response?.data?.message);
+      }
+      throw new Error(
+        "Une erreur s'est produite pendant la récupération des docteurs"
+      );
+    }
+  }
+
+  public async getDoctorsPaginated({
+    limit,
+    page,
+  }: {
+    limit: number;
+    page: number;
+  }): Promise<DoctorsPaginatedResponse> {
+    try {
+      const response = await axios.get(
+        `${API_URL}/doctors-paginated?limit=${limit}&page=${page}`,
+        {
+          headers: this.getHeaders(),
+        }
+      );
+
+      const { data, success, meta } = response.data;
+
+      return { success, data, meta };
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError<{ message: string }>;

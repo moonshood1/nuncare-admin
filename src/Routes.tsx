@@ -18,6 +18,7 @@ import {
   AdsPage,
   ArticlesPage,
 } from "./pages";
+import { DistrictsPage } from "./pages/location";
 
 export const appRoutes = [
   { path: "/", element: <HomePage />, id: 1, label: "Accueil" },
@@ -56,6 +57,12 @@ export const appRoutes = [
     element: <LocationLandingPage />,
     id: 3,
     label: "Gestion des localisations",
+  },
+  {
+    path: "/location/districts",
+    element: <DistrictsPage />,
+    id: 30,
+    label: "Districts",
   },
   {
     path: "/location/cities",

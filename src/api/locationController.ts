@@ -3,6 +3,7 @@ import {
   City,
   CityPayload,
   District,
+  DistrictPayload,
   Region,
   RegionPayload,
 } from "../interfaces/Location";
@@ -70,6 +71,56 @@ class LocationController {
       );
     }
   }
+
+  public async createDistrict(data: DistrictPayload): Promise<BasicResponse> {
+    try {
+      const response = await axios.post(`${API_URL}/district-create`, data, {
+        headers: this.getHeaders(),
+      });
+
+      const { success, message } = response.data;
+
+      return { success, message };
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ message: string }>;
+        throw new Error(axiosError.response?.data?.message);
+      }
+      throw new Error(
+        "Une erreur s'est produite pendant la création du district"
+      );
+    }
+  }
+
+  public async updateDistrict({
+    id,
+    data,
+  }: {
+    id: string;
+    data: Record<string, any>;
+  }): Promise<BasicResponse> {
+    try {
+      const response = await axios.put(
+        `${API_URL}/district-update?id=${id}`,
+        data,
+        {
+          headers: this.getHeaders(),
+        }
+      );
+
+      const { success, message } = response.data;
+      return { success, message };
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ message: string }>;
+        throw new Error(axiosError.response?.data?.message);
+      }
+      throw new Error(
+        "Une erreur s'est produite pendant la modification du district"
+      );
+    }
+  }
+
   public async getRegions({
     limit,
     name,

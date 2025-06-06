@@ -27,3 +27,5 @@ export interface District {
   createdAt: string;
   updatedAt: string;
 }
+
+export type DistrictPayload = Pick<District, "name">;

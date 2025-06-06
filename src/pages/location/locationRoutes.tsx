@@ -5,6 +5,13 @@ const locationBaseUrl = "/location";
 export const locationRoutes = [
   {
     id: uuidv4(),
+    path: `${locationBaseUrl}/districts`,
+    title: "Gestion des districts",
+    linkTitle: "Voir tous les districts enregistrés",
+    icon: <Globe />,
+  },
+  {
+    id: uuidv4(),
     path: `${locationBaseUrl}/regions`,
     title: "Gestion des régions",
     linkTitle: "Voir toutes les regions enregistrées",

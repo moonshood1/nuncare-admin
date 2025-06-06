@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Speciality, User } from "../../../interfaces/Doctors";
 import {
+  ArrowDownIcon,
   SearchIcon,
   SlidersHorizontal,
   UserRoundCheck,
@@ -10,12 +11,13 @@ import {
 import { StatCard } from "../../../components";
 import { usersController } from "../../../api/usersController";
 import { locationController } from "../../../api/locationController";
-import { City, Region } from "../../../interfaces/Location";
+import { City, District, Region } from "../../../interfaces/Location";
 import {
   ModalRequest,
   ModalsHandle,
   ModalDetails,
 } from "../../../components/Modals";
+import { PaginationTab } from "../../../common";
 
 function UsersPage() {
   const [loading, setLoading] = useState(false);
@@ -24,13 +26,16 @@ function UsersPage() {
   const [kycOkCount, setKycOkCount] = useState(0);
   const [doctors, setDoctors] = useState<User[]>([]);
   const [specialities, setSpecialities] = useState<Speciality[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
   const [cities, setCities] = useState<City[]>([]);
   const [regions, setRegions] = useState<Region[]>([]);
-  const [limitTable, setLimitTable] = useState(5);
-  const [filterTableEnabled, setFilterTableEnabled] = useState(false);
+  const [limitTable, setLimitTable] = useState(10);
+  const [page, setPage] = useState(1);
+  const [filterTableEnabled, setFilterTableEnabled] = useState(true);
   const [searchData, setSearchData] = useState<
     Record<string, string | number | boolean>
   >({});
+  const [numbersOfPage, setNumbersOfPage] = useState(0);
   const [user, setUser] = useState<User>();
   const [researchReset, setResearchReset] = useState(false);
   const userDetailsModalRef = useRef<ModalsHandle>(null);
@@ -46,8 +51,30 @@ function UsersPage() {
     requestModalRef.current?.open();
   };
 
-  const changeDoctorsTableLimit = (newLimit: number) => {
-    setLimitTable(newLimit);
+  // const changeDoctorsTableLimit = (newLimit: number) => {
+  //   setLimitTable(newLimit);
+  // };
+
+  const changeDoctorsTablePage = (newPage: number) => {
+    if (newPage !== page) {
+      setPage(newPage);
+    }
+  };
+
+  const changeTableOrderDisplay = async (newOrder: string) => {
+    const sortedUsers = [...doctors].sort((a, b) => {
+      if (newOrder === "firstName") {
+        return a.firstName.localeCompare(b.firstName);
+      } else if (newOrder === "createdAt") {
+        return (
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+      } else {
+        return 0;
+      }
+    });
+
+    setDoctors(sortedUsers);
   };
 
   const changeResearchReset = () => {
@@ -74,9 +101,19 @@ function UsersPage() {
     setCities(response.data);
   };
 
+  const getDistricts = async () => {
+    const response = await locationController.getDistricts();
+    setDistricts(response.data);
+  };
+
   const getDoctors = async () => {
     try {
-      const response = await usersController.getDoctors({ limit: limitTable });
+      const response = await usersController.getDoctorsPaginated({
+        limit: limitTable,
+        page: page,
+      });
+
+      setNumbersOfPage(response.meta.totalPages);
 
       setDoctors(response.data);
     } catch (error) {
@@ -140,11 +177,12 @@ function UsersPage() {
 
   useEffect(() => {
     getDoctors();
-  }, [limitTable, researchReset]);
+  }, [page, limitTable, researchReset]);
 
   useEffect(() => {
     getKycStatsAndUsersCount();
     getSpecialities();
+    getDistricts();
     getRegions();
     getCities();
   }, []);
@@ -170,7 +208,7 @@ function UsersPage() {
           color="blue"
           icon={<UserRoundCheck />}
           isLoading={loading}
-          link="/#"
+          link="/doctors/requests-kyc"
         />
         <StatCard
           value={kycNokCount}
@@ -254,6 +292,24 @@ function UsersPage() {
                 </select>
 
                 <select
+                  defaultValue="District"
+                  className="select my-2"
+                  onChange={(e) =>
+                    setSearchData((prev) => ({
+                      ...prev,
+                      district: e.target.value,
+                    }))
+                  }
+                >
+                  <option value="">-- Sélectionnez un district --</option>
+                  {districts.map((district) => (
+                    <option value={district.name} key={district._id}>
+                      {district.name}
+                    </option>
+                  ))}
+                </select>
+
+                <select
                   defaultValue="Region"
                   className="select my-2"
                   onChange={(e) => {
@@ -323,6 +379,19 @@ function UsersPage() {
         <section className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 my-6 p-4">
           {doctors.length > 0 ? (
             <>
+              <div className="flex justify-end">
+                <select
+                  className="select"
+                  onChange={(e) => changeTableOrderDisplay(e.target.value)}
+                >
+                  <option value={"createdAt"}>
+                    Date d'inscription <ArrowDownIcon />{" "}
+                  </option>
+                  <option value={"firstName"}>
+                    Nom complet <ArrowDownIcon />{" "}
+                  </option>
+                </select>
+              </div>
               <table className="table">
                 <thead>
                   <tr>
@@ -368,7 +437,12 @@ function UsersPage() {
                   ))}
                 </tbody>
               </table>
-              <div className="flex justify-end">
+              <PaginationTab
+                currentPage={page}
+                totalPages={numbersOfPage}
+                setPage={changeDoctorsTablePage}
+              />
+              {/* <div className="flex justify-end">
                 <select
                   defaultValue="Choisissez la taille du tableau"
                   className="select max-w-30"
@@ -380,7 +454,7 @@ function UsersPage() {
                   <option value={10}>10</option>
                   <option value={50}>50</option>
                 </select>
-              </div>
+              </div> */}
             </>
           ) : (
             <p className="font-extralight">Aucun résultat trouvé</p>

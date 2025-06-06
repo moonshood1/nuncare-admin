@@ -209,7 +209,7 @@ function MedecinesPage() {
       <section className="flex flex-row justify-between items-center">
         <div>
           <h1 className="text-xl">
-            Listing de tous les médicaments assurés de Nuncare{" "}
+            Listing de tous les médicaments assurés par la CMU et la MUGEF-CI
           </h1>
           <p className="text-light text-xs my-2">
             Retrouvez dans ce tableau tous les médicaments enregistrés sur
