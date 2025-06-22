@@ -220,7 +220,7 @@ function UsersPage() {
             <h1 className="text-xl">Listing des docteurs </h1>
             <p className="text-light text-xs my-2">
               Retrouvez dans ce tableau tous les docteurs inscrits sur Nuncare
-              dans le details
+              dans le detail
             </p>
           </div>
           <div>

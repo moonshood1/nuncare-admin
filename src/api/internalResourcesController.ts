@@ -1,4 +1,11 @@
-import { Ad, AdPayload, Article } from "../interfaces/InternalResources";
+import {
+  Ad,
+  AdPayload,
+  Article,
+  ArticlePayload,
+  Notification,
+  NotificationPayload,
+} from "../interfaces/InternalResources";
 import apiService from "./apiService";
 
 interface AdsResponse {
@@ -14,6 +21,17 @@ interface ArticlesResponse {
 interface BasicResponse {
   success: boolean;
   message: string;
+}
+
+interface NotificationsPaginatedResponse {
+  success: boolean;
+  data: Notification[];
+  meta: {
+    page: number;
+    limit: number;
+    totalPages: number;
+    totalItems: number;
+  };
 }
 
 class InterResourcesController {
@@ -59,7 +77,7 @@ class InterResourcesController {
   };
 
   // Créer un article
-  createArticle = (data: any): Promise<BasicResponse> => {
+  createArticle = (data: ArticlePayload): Promise<BasicResponse> => {
     return apiService.post<BasicResponse>("/articles-create", data);
   };
 
@@ -86,6 +104,39 @@ class InterResourcesController {
     queryParams?: string;
   }): Promise<ArticlesResponse> => {
     return apiService.get<ArticlesResponse>(`/articles?${queryParams}`);
+  };
+
+  getNotifications = ({
+    limit,
+    page,
+  }: {
+    limit: number;
+    page: number;
+  }): Promise<NotificationsPaginatedResponse> => {
+    return apiService.get<NotificationsPaginatedResponse>(
+      `/notifications?limit=${limit}&page=${page}`
+    );
+  };
+
+  createNotification = (data: NotificationPayload): Promise<BasicResponse> => {
+    return apiService.post<BasicResponse>("/notifications-create", data);
+  };
+
+  updateNotification = ({
+    id,
+    data,
+  }: {
+    id: string;
+    data: Record<string, any>;
+  }): Promise<BasicResponse> => {
+    return apiService.put<BasicResponse>(
+      `/notifications-update?id=${id}`,
+      data
+    );
+  };
+
+  deleteNotificiation = (id: string): Promise<BasicResponse> => {
+    return apiService.delete<BasicResponse>(`/notifications-delete?id=${id}`);
   };
 }
 

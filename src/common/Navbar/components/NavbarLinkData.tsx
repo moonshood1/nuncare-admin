@@ -1,12 +1,12 @@
-import { Bell, Settings, User } from "lucide-react";
+import { Settings, User } from "lucide-react";
 
 export const navbarNavData = [
-  {
-    id: 1,
-    label: "Notifications",
-    url: "/notifications",
-    icon: <Bell />,
-  },
+  // {
+  //   id: 1,
+  //   label: "Notifications",
+  //   url: "/notifications",
+  //   icon: <Bell />,
+  // },
   {
     id: 2,
     label: "Réglages",

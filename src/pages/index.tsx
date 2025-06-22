@@ -18,6 +18,7 @@ import {
   InternalResourcesLandingPage,
   AdsPage,
   ArticlesPage,
+  NotificationsManagementPage,
 } from "./resources";
 
 export {
@@ -34,6 +35,7 @@ export {
   MedecinesPage,
   PharmaciesPage,
   InternalResourcesLandingPage,
+  NotificationsManagementPage,
   AdsPage,
   ArticlesPage,
   NotificationsPage,

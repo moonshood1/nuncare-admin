@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { StatCard } from "../../../components";
 import {
+  ModalAdd,
   ModalConfirmation,
   ModalDetails,
   ModalsHandle,
@@ -8,9 +9,10 @@ import {
 import { Article } from "../../../interfaces/InternalResources";
 import { internalResourcesController } from "../../../api/internalResourcesController";
 import { toast } from "react-toastify";
-import { FolderCheck, Folders, FolderX } from "lucide-react";
+import { CirclePlus, FolderCheck, Folders, FolderX, Text } from "lucide-react";
 import { usersController } from "../../../api/usersController";
 import { User } from "../../../interfaces/Doctors";
+import { tiersApiController } from "../../../api/tiersApiController";
 
 function ArticlesPage() {
   const [searchData, setSearchData] = useState<
@@ -29,7 +31,19 @@ function ArticlesPage() {
     all: 0,
   });
   const [authors, setAuthors] = useState<User[]>([]);
+  const [newArticle, setNewArticle] = useState<{
+    title: string;
+    description: string;
+    content: string;
+    img: File | null;
+  }>({
+    title: "",
+    description: "",
+    content: "",
+    img: null,
+  });
 
+  const addModalRef = useRef<ModalsHandle>(null);
   const detailsModalRef = useRef<ModalsHandle>(null);
   const activateModalRef = useRef<ModalsHandle>(null);
   const deactivateModalRef = useRef<ModalsHandle>(null);
@@ -54,6 +68,20 @@ function ArticlesPage() {
   ];
   const changeArticlesLimitTable = (newLimit: number) => {
     setLimitTable(newLimit);
+  };
+
+  const openAddModalRef = () => {
+    addModalRef.current?.open();
+  };
+
+  const onCloseAddModal = () => {
+    setNewArticle({
+      title: "",
+      description: "",
+      content: "",
+      img: null,
+    });
+    addModalRef.current?.close();
   };
 
   const openArticleDetailsModal = (e: Article) => {
@@ -89,6 +117,39 @@ function ArticlesPage() {
   const changeResearchReset = () => {
     setResearchReset((prev) => !prev);
     setSearchData({});
+  };
+
+  const handleAddArticle = async () => {
+    try {
+      setOpsLoading(true);
+      if (!newArticle.img) return;
+      const urlImg = await tiersApiController.uploadToCloudinary(
+        newArticle.img
+      );
+      if (urlImg) {
+        const response = await internalResourcesController.createArticle({
+          title: newArticle.title,
+          description: newArticle.description,
+          content: newArticle.content,
+          img: urlImg,
+        });
+        if (response.success) {
+          toast.success(response.message);
+          onCloseAddModal();
+        }
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Une erreur inconnue est survenue";
+
+      toast.error(errorMessage);
+      onCloseAddModal();
+    } finally {
+      setOpsLoading(false);
+      setChanges(!changes);
+    }
   };
 
   const handleDeleteArticle = async (id: string) => {
@@ -269,6 +330,15 @@ function ArticlesPage() {
           link="/internal-resources/articles"
         />
       </section>
+      <div className="ml-auto">
+        <button
+          className="btn bg-nuncare-green text-white p-3"
+          onClick={openAddModalRef}
+        >
+          <CirclePlus /> Ajouter un article
+        </button>
+      </div>
+
       <section className="card bg-base-100 shadow p-4 my-4">
         <form key={researchReset.toString()}>
           <select
@@ -340,6 +410,75 @@ function ArticlesPage() {
       <ModalDetails title="Détails de l'article" ref={detailsModalRef}>
         {articleDetailsData(article!)}
       </ModalDetails>
+
+      <ModalAdd
+        ref={addModalRef}
+        title="Ajout d'un article"
+        loading={opsLoading}
+        description="Créez un nouvel article pour Nuncare"
+        onConfirm={() => handleAddArticle()}
+        confirmText="Créer l'article"
+        onClose={onCloseAddModal}
+      >
+        <label className="input my-2">
+          <Text />
+          <input
+            type="text"
+            value={newArticle?.title}
+            className="grow"
+            placeholder="Entrez le titre de l'article"
+            onChange={(e) => {
+              const value = e.target.value;
+              setNewArticle((prev) => ({
+                ...prev,
+                title: value,
+              }));
+            }}
+          />
+        </label>
+
+        <input
+          type="file"
+          className="file-input"
+          accept="image/*"
+          onChange={async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            setNewArticle((prev) => ({
+              ...prev,
+              img: file,
+            }));
+          }}
+        />
+
+        <textarea
+          value={newArticle?.description}
+          className="textarea my-2 text-sm"
+          placeholder="Entrez une description de l'article"
+          rows={4}
+          onChange={(e) => {
+            const value = e.target.value;
+            setNewArticle((prev) => ({
+              ...prev,
+              description: value,
+            }));
+          }}
+        />
+
+        <textarea
+          value={newArticle?.content}
+          className="textarea my-2"
+          placeholder="Entrez le contenu de l'article"
+          rows={10}
+          onChange={(e) => {
+            const value = e.target.value;
+            setNewArticle((prev) => ({
+              ...prev,
+              content: value,
+            }));
+          }}
+        />
+      </ModalAdd>
 
       <section className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 my-6 p-4">
         {articles.length > 0 ? (

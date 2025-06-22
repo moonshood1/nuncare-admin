@@ -17,6 +17,7 @@ import {
   InternalResourcesLandingPage,
   AdsPage,
   ArticlesPage,
+  NotificationsManagementPage,
 } from "./pages";
 import { DistrictsPage } from "./pages/location";
 
@@ -80,7 +81,7 @@ export const appRoutes = [
     path: "/medical-resources",
     element: <MedicalResourcesLandingPage />,
     id: 4,
-    label: "Resources médicales",
+    label: "Ressources médicales",
   },
   {
     path: "/medical-resources/medecines",
@@ -98,7 +99,7 @@ export const appRoutes = [
     path: "/internal-resources",
     element: <InternalResourcesLandingPage />,
     id: 5,
-    label: "Resources internes",
+    label: "Ressources internes",
   },
   {
     path: "/internal-resources/articles",
@@ -111,6 +112,12 @@ export const appRoutes = [
     element: <AdsPage />,
     id: 52,
     label: "Publicités",
+  },
+  {
+    path: "/internal-resources/notifications",
+    element: <NotificationsManagementPage />,
+    id: 53,
+    label: "Gestion des notifications",
   },
   { path: "/account", element: <AccountPage />, id: 6, label: "Compte" },
   { path: "/settings", element: <SettingsPage />, id: 7, label: "Paramètres" },

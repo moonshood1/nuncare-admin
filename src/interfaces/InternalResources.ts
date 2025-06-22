@@ -42,3 +42,25 @@ export interface Article {
   createdAt: string;
   updatedAt: string;
 }
+
+export type ArticlePayload = Pick<
+  Article,
+  "title" | "description" | "content" | "img"
+>;
+
+export interface Notification {
+  _id: string;
+  title: string;
+  message: string;
+  type: string;
+  img?: string;
+  link: string;
+  users: User["_id"][];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type NotificationPayload = Pick<
+  Notification,
+  "title" | "message" | "img" | "type" | "users"
+>;
