@@ -89,6 +89,7 @@ function NotificationsManagementPage() {
   const handleDeleteNotification = async (id: string) => {
     try {
       setOpsLoading(true);
+
       const response = await internalResourcesController.deleteNotificiation(
         id
       );
@@ -96,9 +97,16 @@ function NotificationsManagementPage() {
       if (response.success) {
         toast.success(response.message);
         closeRequestModal();
+        setChanges(!changes);
+      } else {
+        toast.error(response.message || "Échec de la suppression.");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      toast.error("Une erreur est survenue lors de la suppression.");
+    } finally {
+      setOpsLoading(false);
+      setChanges(!changes);
     }
   };
 
@@ -292,7 +300,7 @@ function NotificationsManagementPage() {
                         </a>
                       </td>
                       <td>{notification.users.length}</td>
-                      <td className="flex flex-row items-center gap-2">
+                      <td className="flex flex-row items-center gap-2 h-full">
                         <button
                           className="btn btn-xs bg-red-400 text-white"
                           onClick={() => {
